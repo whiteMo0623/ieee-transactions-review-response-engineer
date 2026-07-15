@@ -1,6 +1,6 @@
 ---
 name: ieee-transactions-review-response-engineer
-description: 以精简但严谨的方式处理 IEEE Transactions 论文的单条审稿意见：联合阅读 LaTeX、PDF、实现代码和既往意见，在一个 Markdown 中完成意见理解、相关论文/代码证据、回复思路、实验设计与实际结果映射；仅在需要时创建一个实验目录；基于真实结果直接写入用户指定的 response Word 文件，并在原位修改前创建一份相邻备份。用于论文返修、补充实验、代码—论文一致性核查、IEEE 图表与 Author Response 写作；默认只保留回复方案、实验代码/结果/图表和最终 Word 三类核心产物，每次只处理一条意见。
+description: 以精简但严谨的方式处理 IEEE Transactions 论文的单条审稿意见：联合阅读 LaTeX、PDF、实现代码和完整 review_comments，先从全部意见中筛选与当前意见相关的条目，再按需核查已处理案件及可复用证据；在一个 Markdown 中完成意见理解、相关论文/代码证据、回复思路、实验设计与实际结果映射；仅在需要时创建一个实验目录；基于真实结果直接写入用户指定的 response Word 文件，并在原位修改前创建一份相邻备份。用于论文返修、补充实验、代码—论文一致性核查、IEEE 图表与 Author Response 写作；默认只保留回复方案、实验代码/结果/图表和最终 Word 三类核心产物，每次只处理一条意见。
 ---
 
 # IEEE Transactions Review Response Engineer
@@ -10,6 +10,7 @@ description: 以精简但严谨的方式处理 IEEE Transactions 论文的单条
 ## 核心约束
 
 - 每次只处理一条意见。
+- 完整读取一次 `review_comments` 以了解所有审稿意见；只对其中与当前意见在疑虑、主张、方法模块或所需证据上相关的条目继续检查。
 - 同时核对 LaTeX、最终 PDF 和实际实现代码，但只记录与当前意见直接相关的事实，不另建通用论文摘要或代码地图。
 - 只复用条件完全匹配且来源可核验的既往证据；当前意见需要的新控制变量、基线、数据、指标或统计分析必须完整完成。
 - 不缩减数据、epoch、模型规模、搜索空间、基线、重复次数或随机种子。
@@ -36,12 +37,14 @@ description: 以精简但严谨的方式处理 IEEE Transactions 论文的单条
 运行 `scripts/init_review_case.py` 可生成仅含 `response-plan.md` 的案件骨架。初始化只记录路径和可用的 Git revision；不要对论文目录、整个代码树或既往案件目录做全量哈希。
 
 ```bash
-python scripts/init_review_case.py R2-C4 --root response_exp --paper-tex path/to/main.tex --paper-pdf path/to/paper.pdf --code-root path/to/repo --comment-file path/to/comment.md --word-file path/to/response.docx --previous-cases path/to/response_exp
+python scripts/init_review_case.py R2-C4 --root response_exp --paper-tex path/to/main.tex --paper-pdf path/to/paper.pdf --code-root path/to/repo --review-comments path/to/review_comments.docx --comment-file path/to/comment.md --word-file path/to/response.docx --previous-cases path/to/response_exp
 ```
 
 ## 1. 在一个文件中完成理解与方案
 
 完整读取论文与代码，但只把回答当前意见所需内容写入 `response-plan.md`：
+
+先完整读取 `review_comments`，按意见编号筛选与当前意见可能相关的条目。对每个候选条目，先判断对应案件是否已经处理：未处理时只记录关联及其可能共享的证据需求；已处理时只打开该案件的 `response-plan.md`，并仅在准备复用时继续读取其中明确引用的结果、配置或代码文件。不得遍历全部既往案件，也不得为复用判定扫描整个代码树。
 
 - 原始意见；
 - 核心疑虑、真实意图与证据门槛；
@@ -71,8 +74,8 @@ python scripts/init_review_case.py R2-C4 --root response_exp --paper-tex path/to
 1. 精确定位当前 `Original Comment` 对应的 `Author Response`；若不能唯一定位，停止并请求定位。
 2. 在同一目录创建且只创建一份备份：`<word-stem>.before-<comment-id>.docx`。不得覆盖已有备份。
 3. 在临时目录或同目录隐藏临时文件中完成局部编辑；验证成功后原子替换用户指定 Word。
-4. 默认只修改目标 `Author Response`；结构比较必须确认其他正文、表格、关系和 `Changes in Manuscript` 未变化。
-5. 渲染最终 Word 做视觉 QA。渲染 PNG/PDF、结构差异 JSON 和临时编辑脚本均为内部临时产物，成功后删除，不放入案件目录。
+4. 默认只修改目标 `Author Response`；写回后重新读取该目标块，并核对其定位锚点、内容、表格、图片和样式。不要默认执行整篇 Word 的结构差异比较。
+5. 只渲染并检查目标 `Author Response` 实际占用的页面；若目标块跨页，则检查其覆盖的全部页面。仅当目标块紧邻分页边界、局部渲染显示版式异常或修改影响相邻内容时，扩大到前后相邻页。不要默认渲染全文。渲染 PNG/PDF 和临时编辑脚本均为内部临时产物，成功后删除，不放入案件目录。
 
 最终回复直接从核心结论切入，不写客套开场。用文字、`$...$` LaTeX 公式、紧凑表格和必要图片形成连续证据链；每个数值必须来自 `experiment/` 的实际结果，并在 `response-plan.md` 的实际结果区标明来源。完整写作与 Word 规则见 [references/response-and-artifact-protocol.md](references/response-and-artifact-protocol.md)。
 
@@ -84,7 +87,7 @@ python scripts/init_review_case.py R2-C4 --root response_exp --paper-tex path/to
 python scripts/audit_review_case.py path/to/R2-C4
 ```
 
-审计检查：单一方案文件已完成、实验需求已明确、必要实验代码与机器可读结果存在、案件目录无默认冗余产物、指定 Word 与相邻备份存在且不同。审计不替代对 Word 的结构比较和全页视觉检查。
+审计检查：单一方案文件已完成、实验需求已明确、必要实验代码与机器可读结果存在、案件目录无默认冗余产物、指定 Word 与相邻备份存在且不同。审计不替代对目标 `Author Response` 的回读核验和目标页视觉检查。
 
 通过后清理临时目录、渲染页、预览 PDF、`__pycache__` 和成功运行日志。最终向用户只报告核心方案文件、实验图表/结果、已更新的指定 Word 及备份位置。
 

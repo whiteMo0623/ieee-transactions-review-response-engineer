@@ -66,6 +66,7 @@ def main() -> int:
     parser.add_argument("--paper-tex", required=True)
     parser.add_argument("--paper-pdf", required=True)
     parser.add_argument("--code-root", required=True)
+    parser.add_argument("--review-comments", required=True)
     comment = parser.add_mutually_exclusive_group(required=True)
     comment.add_argument("--comment-file")
     comment.add_argument("--comment-text")
@@ -76,9 +77,11 @@ def main() -> int:
     paper_tex = existing_file(args.paper_tex)
     paper_pdf = existing_file(args.paper_pdf)
     code_root = existing_dir(args.code_root)
+    review_comments = existing_file(args.review_comments)
     word_file = existing_file(args.word_file)
     previous_cases = existing_dir(args.previous_cases)
     assert paper_tex is not None and paper_pdf is not None and code_root is not None
+    assert review_comments is not None
 
     if args.comment_file:
         comment_file = existing_file(args.comment_file)
@@ -98,6 +101,7 @@ paper_tex: {yaml_string(paper_tex)}
 paper_pdf: {yaml_string(paper_pdf)}
 code_root: {yaml_string(code_root)}
 code_revision: {yaml_string(revision)}
+review_comments: {yaml_string(review_comments)}
 word_file: {yaml_string(word_file)}
 previous_cases: {yaml_string(previous_cases)}
 ---
@@ -114,7 +118,7 @@ previous_cases: {yaml_string(previous_cases)}
 
 ## 与既往意见的关系及复用判定
 
-<!-- TODO -->
+<!-- TODO：先从完整 review_comments 筛选相关意见；未处理者只记录关联，已处理者先查对应 response-plan.md，仅在拟复用时核查其引用证据。 -->
 
 ## 回复思路与实验设计
 
