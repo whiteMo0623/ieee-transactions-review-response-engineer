@@ -1,6 +1,6 @@
 ---
 name: ieee-transactions-review-response-engineer
-description: 以精简但严谨的方式处理 IEEE Transactions 论文的单条审稿意见：联合阅读 LaTeX、PDF、实现代码和完整 review_comments，先从全部意见中筛选与当前意见相关的条目，再按需核查已处理案件及可复用证据；在一个 Markdown 中完成意见理解、相关论文/代码证据、回复思路、实验设计与实际结果映射；仅在需要时创建一个实验目录；基于真实结果直接写入用户指定的 response Word 文件，并在原位修改前创建一份相邻备份。用于论文返修、补充实验、代码—论文一致性核查、IEEE 图表与 Author Response 写作；默认只保留回复方案、实验代码/结果/图表和最终 Word 三类核心产物，每次只处理一条意见。
+description: 以精简但严谨的方式处理 IEEE Transactions 论文的单条审稿意见：联合阅读 LaTeX、PDF、实现代码和完整 review_comments，先从全部意见中筛选与当前意见相关的条目，再按需核查已处理案件及可复用证据；在一个 Markdown 中完成意见理解、相关论文/代码证据、回复思路、实验设计与实际结果映射；仅在需要时创建一个实验目录；基于真实结果撰写自然、直接、自包含且不以小标题切碎论证的 Author Response，写入用户指定的 response Word 文件，并在原位修改前创建一份相邻备份。用于论文返修、补充实验、代码—论文一致性核查、IEEE 图表与 Author Response 写作；默认只保留回复方案、实验代码/结果/图表和最终 Word 三类核心产物，每次只处理一条意见。
 ---
 
 # IEEE Transactions Review Response Engineer
@@ -15,6 +15,9 @@ description: 以精简但严谨的方式处理 IEEE Transactions 论文的单条
 - 只复用条件完全匹配且来源可核验的既往证据；当前意见需要的新控制变量、基线、数据、指标或统计分析必须完整完成。
 - 不缩减数据、epoch、模型规模、搜索空间、基线、重复次数或随机种子。
 - 先得到真实结果，再写最终回复；不得虚构、挑选或夸大证据。
+- 将“核心疑虑、真实意图、证据门槛、实验筹备过程和复用判断”限制在内部 `response-plan.md`；最终回复只呈现结论、决定性证据、实际修改和必要边界。
+- 最终 `Author Response` 默认使用连续段落，不插入 `1) ...`、`What is...`、`Additional experiment...` 等组织作者思考过程的小标题；只有用户明确要求或既有模板强制时例外。
+- 其他审稿意见的编号、结论出处和处理过程只保留在内部方案中；最终回复不得要求当前审稿人阅读或关注其他审稿人的意见。
 - 默认只修改 Word 中当前意见的 `Author Response`，保留 `Original Comment`、`Changes in Manuscript`、其他意见和格式。
 
 ## 最小案件结构
@@ -46,13 +49,17 @@ python scripts/init_review_case.py R2-C4 --root response_exp --paper-tex path/to
 
 先完整读取 `review_comments`，按意见编号筛选与当前意见可能相关的条目。对每个候选条目，先判断对应案件是否已经处理：未处理时只记录关联及其可能共享的证据需求；已处理时只打开该案件的 `response-plan.md`，并仅在准备复用时继续读取其中明确引用的结果、配置或代码文件。不得遍历全部既往案件，也不得为复用判定扫描整个代码树。
 
+复用判断必须区分“复用实验事实”和“复制回复产物”。在 `response-plan.md` 中记录原始结果文件、条件匹配情况及采用方式（正文数值、紧凑表格、必要图片或修订稿引用）。最终 `Author Response` 不写其他 reviewer/comment 编号，不写 `as shown in the response to...`、`the results in R2C...` 等交叉引用，也不把复用来源伪装成当前意见新增的独立实验。
+
+把 `response-plan.md` 视为内部工作文件。可以在其中充分分析审稿人的疑虑和证据缺口，但不得把“我们如何理解意见、如何设计流程、如何消除担忧”等元叙述直接搬入最终 `Author Response`。
+
 - 原始意见；
 - 核心疑虑、真实意图与证据门槛；
 - 相关论文位置、代码文件/行号、配置和现有结果；
 - 与既往意见的关联及逐项复用判定；
 - 回复思路；
 - 必要实验的目的、对比方法、变量、数据集、指标、训练配置、随机种子、预期结果和预先判定规则；
-- 实际结果、来源文件/字段和结论边界；
+- 实际结果、来源文件/字段、基于结果的直接回答句和结论边界；
 - Word 写入位置、备份位置与完成状态。
 
 不要把这些内容再拆成 `paper-understanding.md`、`code-paper-map.md`、`evidence-summary.md`、`evidence-ledger.json` 或 `case-summary.md`。详细实验规则见 [references/experiment-and-evidence-protocol.md](references/experiment-and-evidence-protocol.md)。
@@ -65,7 +72,7 @@ python scripts/init_review_case.py R2-C4 --root response_exp --paper-tex path/to
 
 正式命令、环境、数据版本、全部运行、种子和失败重跑记录写入 `response-plan.md` 或机器可读结果本身。运行日志默认写入临时目录；成功后删除，失败时仅保留定位问题所需日志。冒烟测试只验证接口，不作为证据。
 
-只生成进入最终证据链的图表。图使用 Times New Roman，按最终栏宽保证可读，灰度可辨；多子图在下方标注 `(a)`、`(b)`、`(c)`；保留矢量版本与 Word 使用的高分辨率版本，不再复制到第二个 response 目录。
+只生成进入最终证据链的图表。不得因为某项结果已经用于其他审稿意见，就自动把对应图表复制到当前回复。先判断图表对当前意见是否不可替代：辅助性证据只在正文中报告关键数值；修订稿已经包含且能够独立支撑当前结论时，优先引用修订稿中的图表；只有当前意见明确要求该类可视化、仅靠文字或数值不足以完成论证且修订稿中没有等效证据时，才从原始实验产物重新嵌入自包含图表。不得从其他回复截图或复制带有其他意见编号的图表。图使用 Times New Roman，按最终栏宽保证可读，灰度可辨；多子图在下方标注 `(a)`、`(b)`、`(c)`；保留矢量版本与 Word 使用的高分辨率版本，不再复制到第二个 response 目录。
 
 ## 3. 将 Author Response 直接写入指定 Word
 
@@ -75,9 +82,9 @@ python scripts/init_review_case.py R2-C4 --root response_exp --paper-tex path/to
 2. 在同一目录创建且只创建一份备份：`<word-stem>.before-<comment-id>.docx`。不得覆盖已有备份。
 3. 在临时目录或同目录隐藏临时文件中完成局部编辑；验证成功后原子替换用户指定 Word。
 4. 默认只修改目标 `Author Response`；写回后重新读取该目标块，并核对其定位锚点、内容、表格、图片和样式。不要默认执行整篇 Word 的结构差异比较。
-5. 只渲染并检查目标 `Author Response` 实际占用的页面；若目标块跨页，则检查其覆盖的全部页面。仅当目标块紧邻分页边界、局部渲染显示版式异常或修改影响相邻内容时，扩大到前后相邻页。不要默认渲染全文。渲染 PNG/PDF 和临时编辑脚本均为内部临时产物，成功后删除，不放入案件目录。
+5. 在 Windows 且本机安装 Microsoft Word 时，使用独立、隐藏的 Word COM 实例，以只读且不加入最近文件的方式打开最终 Word，通过 `ExportAsFixedFormat` 生成临时 QA PDF；不得保存文档、附着或关闭用户已有的 Word 实例。只把目标 `Author Response` 实际占用的 PDF 页面渲染为图片并检查；若目标块跨页，则检查其覆盖的全部页面。仅当目标块紧邻分页边界、局部渲染显示版式异常或修改影响相邻内容时，扩大到前后相邻页。不得默认使用 LibreOffice；Microsoft Word 不可用时，先向用户说明并获得明确同意，才可使用 LibreOffice，且必须注明其排版结果不代表 Microsoft Word。渲染 PNG/PDF 和临时编辑脚本均为内部临时产物，成功后删除，不放入案件目录。
 
-最终回复直接从核心结论切入，不写客套开场。用文字、`$...$` LaTeX 公式、紧凑表格和必要图片形成连续证据链；每个数值必须来自 `experiment/` 的实际结果，并在 `response-plan.md` 的实际结果区标明来源。完整写作与 Word 规则见 [references/response-and-artifact-protocol.md](references/response-and-artifact-protocol.md)。
+最终回复强制采用“直接结论 → 决定性证据 → 对论文的实际修改 → 仅在必要时给出结论边界”的顺序。第一句必须脱离上下文也能直接回答当前意见，不得以致谢、认同、承认担忧、解释处理过程或 `To address this concern` 一类元叙述开场。疑虑分析和实验筹备留在 `response-plan.md`，不得泄漏成防守型回复。用连续段落组织论证，不用编号式或概念式小标题切分回复；涉及多项问题时按审稿意见的顺序自然过渡。用文字、`$...$` LaTeX 公式、紧凑表格和必要图片形成证据链；每个数值必须来自 `experiment/` 的实际结果，并在 `response-plan.md` 的实际结果区标明来源。交付前执行直接性、自然表达、自包含和图表必要性检查，完整规则见 [references/response-and-artifact-protocol.md](references/response-and-artifact-protocol.md)。
 
 ## 4. 一次性验收
 

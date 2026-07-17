@@ -1,4 +1,4 @@
 interface:
   display_name: "IEEE Transactions Review Response Engineer"
   short_description: "精简处理单条审稿意见、完整实验并原位更新 Word"
-  default_prompt: "使用 $ieee-transactions-review-response-engineer 处理一条审稿意见；案件目录只保留回复方案和必要实验产物，并在备份后直接更新我指定的 response Word。"
+  default_prompt: "使用 $ieee-transactions-review-response-engineer 处理一条审稿意见；完整执行必要实验，撰写连续、自然、自包含且不引用其他审稿意见的 Author Response，并在备份后更新我指定的 response Word。"

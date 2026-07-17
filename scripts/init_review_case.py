@@ -122,11 +122,11 @@ previous_cases: {yaml_string(previous_cases)}
 
 ## 回复思路与实验设计
 
-<!-- TODO：将 experiment_required 改为 true 或 false；若为 true，写全实验设计。 -->
+<!-- TODO：将 experiment_required 改为 true 或 false；若为 true，写全实验设计。疑虑分析和筹备过程仅供内部使用，不直接搬入 Author Response。 -->
 
 ## 实际结果与证据映射
 
-<!-- TODO：写入真实结果、来源文件/字段和结论边界。 -->
+<!-- TODO：先写一句基于真实结果、可直接回答意见的首句候选，再记录数值、来源文件/字段、证据映射和必要结论边界。 -->
 
 ## Word 更新记录
 
