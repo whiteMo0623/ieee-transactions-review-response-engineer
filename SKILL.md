@@ -1,6 +1,6 @@
 ---
 name: ieee-transactions-review-response-engineer
-description: 以精简但严谨的方式处理 IEEE Transactions 论文的单条审稿意见：联合阅读 LaTeX、PDF、实现代码和完整 review_comments，先从全部意见中筛选与当前意见相关的条目，再按需核查已处理案件及可复用证据；在一个 Markdown 中完成意见理解、相关论文/代码证据、回复思路、实验设计与实际结果映射；仅在需要时创建一个实验目录；基于真实结果撰写自然、直接、自包含且不以小标题切碎论证的 Author Response，写入用户指定的 response Word 文件，并在原位修改前创建一份相邻备份。用于论文返修、补充实验、代码—论文一致性核查、IEEE 图表与 Author Response 写作；默认只保留回复方案、实验代码/结果/图表和最终 Word 三类核心产物，每次只处理一条意见。
+description: 以精简但严谨的方式处理 IEEE Transactions 论文的单条审稿意见：联合阅读 LaTeX、PDF、实现代码和完整 review_comments，先从全部意见中筛选与当前意见相关的条目，再按需核查已处理案件及可复用证据；在一个 Markdown 中完成意见理解、相关论文/代码证据、回复思路、实验设计与实际结果映射；仅在需要时创建一个实验目录；根据意见类型组织 Author Response：对明确要求新增实验、分析、证明或内容的意见，先说明已按建议完成的修改，再报告证据和基于结果的谨慎解释；对要求判断现有主张的意见，才在证据充分时使用结论优先；写入用户指定的 response Word 文件，并在原位修改前创建一份相邻备份。用于论文返修、补充实验、代码—论文一致性核查、IEEE 图表与 Author Response 写作；默认只保留回复方案、实验代码/结果/图表和最终 Word 三类核心产物，每次只处理一条意见。
 ---
 
 # IEEE Transactions Review Response Engineer
@@ -10,12 +10,16 @@ description: 以精简但严谨的方式处理 IEEE Transactions 论文的单条
 ## 核心约束
 
 - 每次只处理一条意见。
+- 先识别当前意见的主要任务：是明确要求新增或修正内容，还是要求判断现有主张；回复开场和证据—解释顺序随意见类型变化，不把“结论优先”作为所有意见的硬规则。
 - 完整读取一次 `review_comments` 以了解所有审稿意见；只对其中与当前意见在疑虑、主张、方法模块或所需证据上相关的条目继续检查。
 - 同时核对 LaTeX、最终 PDF 和实际实现代码，但只记录与当前意见直接相关的事实，不另建通用论文摘要或代码地图。
 - 只复用条件完全匹配且来源可核验的既往证据；当前意见需要的新控制变量、基线、数据、指标或统计分析必须完整完成。
 - 不缩减数据、epoch、模型规模、搜索空间、基线、重复次数或随机种子。
 - 先得到真实结果，再写最终回复；不得虚构、挑选或夸大证据。
-- 将“核心疑虑、真实意图、证据门槛、实验筹备过程和复用判断”限制在内部 `response-plan.md`；最终回复只呈现结论、决定性证据、实际修改和必要边界。
+- 将“核心疑虑、真实意图、证据门槛、实验筹备过程和复用判断”限制在内部 `response-plan.md`；最终回复只呈现与当前意见相关的实际修改、证据、基于结果的校准解释和必要边界。
+- 对审稿人明确要求新增实验、分析、证明、对比、统计或正文内容的意见，首句应在事实属实时说明审稿人的建议/要求以及已经完成的具体增补；`Following the reviewer’s suggestion, we added ...` 和 `In response to the reviewer’s request, we added ...` 不是空泛的过程性开场。
+- 对经验性实验或分析，先报告新增内容、方法和实际结果，再解释其支持范围；除非存在形式证明或预先定义且满足的判定标准，默认不使用 `prove`、`confirm`、`establish`、`demonstrate` 或“决定性证据”等过强表述。
+- 所有公式和数学符号统一使用 TeX 格式，即使最终写入 Word 也保留 TeX 表达：行内公式使用 `$...$`，独立公式使用单独成行的 `\[...\]`；可直接输入的独立符号（例如 `℃`）直接使用 Unicode 符号，不写成 LaTeX 或英文名称；不得使用 `L2`、`degrees C` 等原生文本代替，应写成 `$L_2$`、`℃`，也不得用 Office Math 或其他 Word 原生公式格式替代 TeX 源码。
 - 最终 `Author Response` 默认使用连续段落，不插入 `1) ...`、`What is...`、`Additional experiment...` 等组织作者思考过程的小标题；只有用户明确要求或既有模板强制时例外。
 - 其他审稿意见的编号、结论出处和处理过程只保留在内部方案中；最终回复不得要求当前审稿人阅读或关注其他审稿人的意见。
 - 默认只修改 Word 中当前意见的 `Author Response`，保留 `Original Comment`、`Changes in Manuscript`、其他意见和格式。
@@ -54,12 +58,13 @@ python scripts/init_review_case.py R2-C4 --root response_exp --paper-tex path/to
 把 `response-plan.md` 视为内部工作文件。可以在其中充分分析审稿人的疑虑和证据缺口，但不得把“我们如何理解意见、如何设计流程、如何消除担忧”等元叙述直接搬入最终 `Author Response`。
 
 - 原始意见；
+- 意见类型与开场模式（是否明确要求新增/修正内容，以及对应的首句和证据—解释顺序）；
 - 核心疑虑、真实意图与证据门槛；
 - 相关论文位置、代码文件/行号、配置和现有结果；
 - 与既往意见的关联及逐项复用判定；
 - 回复思路；
 - 必要实验的目的、对比方法、变量、数据集、指标、训练配置、随机种子、预期结果和预先判定规则；
-- 实际结果、来源文件/字段、基于结果的直接回答句和结论边界；
+- 实际结果、来源文件/字段、基于结果的校准解释句和结论边界；
 - Word 写入位置、备份位置与完成状态。
 
 不要把这些内容再拆成 `paper-understanding.md`、`code-paper-map.md`、`evidence-summary.md`、`evidence-ledger.json` 或 `case-summary.md`。详细实验规则见 [references/experiment-and-evidence-protocol.md](references/experiment-and-evidence-protocol.md)。
@@ -84,7 +89,13 @@ python scripts/init_review_case.py R2-C4 --root response_exp --paper-tex path/to
 4. 默认只修改目标 `Author Response`；写回后重新读取该目标块，并核对其定位锚点、内容、表格、图片和样式。不要默认执行整篇 Word 的结构差异比较。
 5. 在 Windows 且本机安装 Microsoft Word 时，使用独立、隐藏的 Word COM 实例，以只读且不加入最近文件的方式打开最终 Word，通过 `ExportAsFixedFormat` 生成临时 QA PDF；不得保存文档、附着或关闭用户已有的 Word 实例。只把目标 `Author Response` 实际占用的 PDF 页面渲染为图片并检查；若目标块跨页，则检查其覆盖的全部页面。仅当目标块紧邻分页边界、局部渲染显示版式异常或修改影响相邻内容时，扩大到前后相邻页。不得默认使用 LibreOffice；Microsoft Word 不可用时，先向用户说明并获得明确同意，才可使用 LibreOffice，且必须注明其排版结果不代表 Microsoft Word。渲染 PNG/PDF 和临时编辑脚本均为内部临时产物，成功后删除，不放入案件目录。
 
-最终回复强制采用“直接结论 → 决定性证据 → 对论文的实际修改 → 仅在必要时给出结论边界”的顺序。第一句必须脱离上下文也能直接回答当前意见，不得以致谢、认同、承认担忧、解释处理过程或 `To address this concern` 一类元叙述开场。疑虑分析和实验筹备留在 `response-plan.md`，不得泄漏成防守型回复。用连续段落组织论证，不用编号式或概念式小标题切分回复；涉及多项问题时按审稿意见的顺序自然过渡。用文字、`$...$` LaTeX 公式、紧凑表格和必要图片形成证据链；每个数值必须来自 `experiment/` 的实际结果，并在 `response-plan.md` 的实际结果区标明来源。交付前执行直接性、自然表达、自包含和图表必要性检查，完整规则见 [references/response-and-artifact-protocol.md](references/response-and-artifact-protocol.md)。
+最终 `Author Response` 不采用对所有意见一刀切的开场顺序，而是先根据意见类型组织信息：
+
+- 对明确要求新增实验、分析、证明、对比、统计或正文内容的意见，采用“审稿人建议/要求 → 已完成的新增内容 → 必要的设置、方法或证明步骤 → 实际结果 → 基于结果的校准解释 → 论文修改位置与必要边界”。首句可写 `Following the reviewer’s suggestion, we added ...` 或 `In response to the reviewer’s request, we added ...`；这类句子说明已经完成的具体事实，不是应当删除的空泛过程性开场。不要在新增内容和实际结果之前先写“该分析证明了……”或“该分析提供了决定性证据”。
+- 对事实更正或缺失内容，采用“直接指出更正/补充 → 支撑事实 → 论文中的实际修改”；若补充内容同时是审稿人明确要求的，优先使用上一条的审稿人建议锚定开场。
+- 对要求判断现有主张是否成立、或要求澄清方法选择的意见，只有在答案可以被紧随其后的证据直接支撑时才使用结论优先；如果答案依赖新增分析，应先说明分析和结果，再给出解释。经验性结果默认使用 `supports`、`indicates` 或 `is consistent with` 等校准表达，不使用 `prove`、`confirm`、`establish`、`demonstrate` 或“决定性证据”等过强表述，除非存在形式证明或预先定义且满足的判定标准。
+
+无论意见类型如何，第一句都应直接进入当前意见的事实，不以致谢、泛泛认同、担忧复述或没有具体修改内容的 `To address this concern...` 开场。疑虑分析和实验筹备留在 `response-plan.md`，不得泄漏成防守型回复。用连续段落组织论证，不用编号式或概念式小标题切分回复；涉及多项问题时按审稿意见的顺序自然过渡。公式和数学符号统一使用 TeX：行内使用 `$...$`，独立公式使用单独成行的 `\[...\]`；可直接输入的符号如 `℃` 直接使用，禁止用 `L2`、`degrees C` 等原生文本代替 `$L_2$`、`℃`，也禁止用 Office Math 替代 TeX。每个数值必须来自 `experiment/` 的实际结果，并在 `response-plan.md` 的实际结果区标明来源。交付前执行直接性、自然表达、自包含和图表必要性检查，完整规则见 [references/response-and-artifact-protocol.md](references/response-and-artifact-protocol.md)。
 
 ## 4. 一次性验收
 

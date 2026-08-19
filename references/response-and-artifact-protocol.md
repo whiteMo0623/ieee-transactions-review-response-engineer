@@ -1,17 +1,16 @@
 # 回复、图表与 Word 原位更新协议
 
-## 1. 结果优先的 Author Response
+## 1. 按意见类型组织的 Author Response
 
-严格分离内部推理和外部回复。`response-plan.md` 可以记录审稿人的核心疑虑、真实意图、证据门槛、候选解释、实验筹备和复用判断；最终 `Author Response` 不复述这些分析，只呈现审稿人作出判断所需的结论和证据。
+严格分离内部推理和外部回复。`response-plan.md` 可以记录审稿人的核心疑虑、真实意图、证据门槛、候选解释、实验筹备和复用判断；最终 `Author Response` 不复述这些分析，只呈现审稿人作出判断所需的实际修改、证据、基于结果的解释和必要边界。
 
-先判断当前意见属于经验性质疑、事实澄清、方法选择、错误修正或缺失内容，再按以下顺序写作：
+先判断当前意见的主要任务。类型可以组合，但首句和信息顺序应由最需要回应的任务决定：
 
-1. **直接结论**：第一句明确回答“是否成立、结果是什么、采用了什么修正”，并能脱离上下文独立成立；
-2. **决定性证据**：紧接最能回答意见的实际数值、比较、公式、表格或图片；
-3. **实际修改**：说明论文中新增、修正或收缩了什么；
-4. **必要边界**：只有边界会实质改变结论适用范围时才保留，放在证据和修改之后，通常只用一句话。
+- **明确增补（`explicit_addition`）**：审稿人明确要求新增实验、分析、证明、对比、统计或正文内容。采用“审稿人建议/要求 → 已完成的具体增补 → 必要的设置、方法或证明步骤 → 实际结果 → 基于结果的校准解释 → 论文修改位置与必要边界”。首句可写 `Following the reviewer’s suggestion, we added ...` 或 `In response to the reviewer’s request, we added ...`；这类句子说明已经完成的具体事实，不是应当删除的空泛过程性开场。
+- **事实更正或缺失内容（`fact_correction_or_missing_content`）**：采用“直接指出更正/补充 → 支撑事实 → 论文中的实际修改”。如果补充内容同时是审稿人明确要求的，优先使用上一条的审稿人建议锚定开场。
+- **主张判断或方法澄清（`claim_assessment_or_clarification`）**：可以在证据充分且能被紧随其后的证据直接支撑时给出校准后的直接回答；如果回答依赖新增分析，应先说明分析和结果，再给出解释，不强行结论先行。
 
-不得默认使用以下防守型或过程型开场：
+不得默认使用以下防守型、泛泛认同或没有具体事实的过程型开场：
 
 - `We thank the reviewer...`
 - `We agree/acknowledge that...`
@@ -20,18 +19,22 @@
 - `It is worth noting that...`
 - `While we recognize..., we believe...`
 
-将这类句子替换为事实句。例如，不写 “To address this concern, we conducted an additional experiment”，直接写 “The additional experiment shows that ...”。只有确实需要承认事实错误或撤回主张时，才直接写明错误与修正，不用铺垫性自我辩护。
+对于非明确增补型意见，将这类句子替换为具体事实句。对于明确增补型意见，不要把审稿人建议视为必须删除的过程信息；优先写 `Following the reviewer’s suggestion, we added ...`，随后报告设置和实际结果。不要以 `The rank analysis proves that ...`、`The new experiment provides decisive evidence ...` 等未经结果支撑的定性句开场。只有确实需要承认事实错误或撤回主张时，才直接写明错误与修正，不用铺垫性自我辩护。
 
-首段优先在两到四句内完成“结论 + 最强证据”。实验设置只保留解释结果所必需的变量；完整训练细节留在方案文件、表注或论文修改中。避免多层 `although/while/however/nevertheless` 转折，不为每个结论机械添加限定语。若结果不支持原主张，直接陈述结果并收缩或撤回表述。
+对于明确增补型意见，首段优先在两到四句内完成“已完成的增补 + 必要设置 + 实际结果”；对于主张判断型意见，才可在两到四句内完成“校准后的回答 + 最强证据”。实验设置只保留解释结果所必需的变量；完整训练细节留在方案文件、表注或论文修改中。避免多层 `although/while/however/nevertheless` 转折，不为每个结论机械添加限定语。若结果不支持原主张，直接陈述结果并收缩或撤回表述。
 
 默认把整条 `Author Response` 写成一组连续段落，不用编号式或概念式小标题组织作者的分析过程。不得插入 `1) What is...`、`2) Additional experiment...`、`Scope of the evidence` 或同类标题。审稿意见包含多个问题时，按原意见顺序逐项回答，并用事实句自然过渡；表题和图注不属于此处所说的小标题。只有用户明确要求分项、期刊模板强制分项或不分项会造成指代歧义时才使用简短标签。
 
-优先使用普通研究者会自然说出的具体句子。先陈述遗漏、修正或结果，再解释含义。例如：
+优先使用普通研究者会自然说出的具体句子。明确增补型意见先陈述“审稿人要求什么、我们新增了什么”，再报告结果并解释含义；其他意见先陈述更正或结果，再解释含义。例如：
 
 - 不写 `These measurements confirm that, for the claim at issue, the original values were incomplete; at the same time, the new tests provide the previously missing evidence at both output boundaries.`
 - 写 `The original approximately 1 ms timing omitted required online steps. With all steps included, the coefficient path has a worst p99 of 2.071 ms and the full-field path has a worst p99 of 22.576 ms.`
+- 不写 `The rank analysis proves that the claim is correct.`
+- 写 `Following the reviewer’s suggestion, we added a rank analysis of the learned predictors. The analysis yielded ... These results support the revised claim under ... .`
 - 不写 `The evidence nevertheless has a clearly defined scope`、`the conclusion is supported only insofar as...` 或连续多句解释作者为何有资格保留某项主张。
 - 写清“原表漏了什么、完整计时是多少、两种输出边界有什么区别”，然后只保留一句真正必要的适用范围。
+
+经验性实验或分析之后的解释必须校准证据强度。默认使用 `supports`、`indicates` 或 `is consistent with`；只有形式证明或预先定义且满足的判定标准，才使用 `proves`、`establishes`、`confirms`、`demonstrates` 或“决定性证据”。作者应说明证据支持和不支持的范围，而不是在证据出现前替审稿人宣布其是否足以证明主张。
 
 一个段落只承担一个主要任务：界定事实、说明实验、报告结果、解释含义或给出边界。若一句话包含多层分号、三个以上转折或需要读者回看才能找到主语，拆成两到三句。报告完关键数字后，直接用一句话说明它们意味着什么；不要在后续段落用不同措辞重复同一结论。
 
@@ -39,15 +42,16 @@ Markdown 草稿不是默认交付物。可在内存或临时文件中组织回�
 
 写入 Word 前执行一次直接性检查：
 
-- 第一有效句是否已经回答当前意见，而不是描述作者态度或处理过程；
+- 第一有效句是否直接进入当前意见的事实：明确增补型意见是否点明审稿人建议和具体新增内容，其他意见是否给出可由后文证据支撑的事实或校准回答；
 - 删除开场句是否不损失任何事实；若是，删除该句；
-- 是否先给结论和证据，再给限制条件；
+- 是否按照意见类型组织顺序：明确增补型意见先写增补和结果，再写解释；必要边界是否放在证据和修改之后；
 - 是否存在没有实际作用的致谢、认同、担忧复述或自我辩护；
 - 每个比较级、因果词、显著性词、范围词和数值是否可绑定实际证据；
 - 是否只保留会改变审稿人判断的信息。
 - 是否存在可以用更短、更具体的事实句表达的抽象措辞；
 - 是否出现为组织作者思考过程而设置的小标题；
 - 是否在不同段落重复同一个限定或结论。
+- 是否在实验、分析或证明的实际内容之前使用 `prove`、`confirm`、`establish`、`demonstrate` 或“决定性证据”等未经支撑的强结论；
 
 ## 2. 关联意见、复用证据与自包含
 
@@ -68,9 +72,14 @@ Markdown 草稿不是默认交付物。可在内存或临时文件中组织回�
 4. **保持来源透明**：在 `response-plan.md` 中记录原始结果与复用关系；若嵌入当前回复，使用当前意见的图表编号和能够独立理解的图注，不保留其他意见编号，也不把同一运行描述成新的独立实验。
 5. **控制重复长度**：同一图表已经在回复信其他位置完整出现时，只有其对当前意见不可替代才再次嵌入；否则改用一段数值摘要或修订稿引用。
 
-## 3. 公式、表格与图片
+公式和数学符号在逻辑草稿、实验结果、表格、图注以及最终 Word 中统一采用 TeX 格式；写入 Word 时也保留 TeX 源码和公式分隔符，不得改写成 Office Math、Word 原生公式或其他原生文本表达。
 
-逻辑草稿中的符号和公式使用 `$...$`；写入 Word 时使用模板支持的 Office Math 或清晰的原生文本表达。符号定义与论文保持一致。
+- **行内公式**：使用 `$...$`，例如 `$L_2$`、`$p<0.05$`。
+- **独立公式**：使用单独成行的 `\[...\]`，不要使用 `$$...$$` 或 `\(...\)` 代替。
+- **可直接输入的符号**：对于可以直接输入的独立 Unicode 符号，直接使用符号本身，例如 `℃`；不要写成 `$℃$`、`\\degree C` 或 `degrees C`。
+- **禁止原生文本代替数学表达**：`L2`、`degrees C` 等写法不合规，应分别写成 `$L_2$`、`℃`。同一符号在正文、表格、图和论文中保持含义、大小写、上下标及字体语义一致；新符号首次出现时应在正文中定义。
+
+公式写入 Word 后，回读时检查 `$...$` 与 `\[...\]` 是否保留、是否正确区分行内和独立公式，以及是否存在 `L2`、`degrees C` 等原生文本替代。
 
 表格只保留当前论证需要的列，明确单位、方向、均值/离散度、种子数和最佳值规则。小数位与测量精度一致；表格由实验结果直接生成或逐项核验。
 
