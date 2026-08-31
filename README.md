@@ -53,8 +53,8 @@ flowchart TD
     H --> I
     I --> J["创建唯一相邻备份"]
     J --> K["原位写入指定 Word"]
-    K --> L["使用 Microsoft Word 只读导出 QA PDF"]
-    L --> N["回读目标块并渲染目标页面"]
+    K --> L["使用 bundled Python + render_docx.py 渲染 QA PDF/PNG"]
+    L --> N["用 pdftotext 定位页码并用 view_image 检查目标页面"]
     N --> M["清理临时产物并交付"]
 ```
 
@@ -136,11 +136,12 @@ Word 更新遵循以下规则：
 - 只修改当前意见的 `Author Response`；
 - 保留 `Original Comment`、`Changes in Manuscript`、其他意见和模板格式；
 - 写回后重新读取目标回复块，核对正文、表格、图片、数字、符号和定位锚点；
-- Windows 环境优先使用本机 Microsoft Word 的只读 COM 导出生成临时 QA PDF；
-- 使用独立隐藏的 Word 实例，不加入最近文件、不保存文档，也不影响用户已有的 Word 实例；
-- 只渲染目标回复实际占用的页面；出现分页或布局异常时再扩大到相邻页；
-- 不默认使用 LibreOffice；Word 不可用时须经用户明确同意，并说明 LibreOffice 的排版结果仅供近似检查；
-- staging、渲染页、临时 PDF 和运行日志在成功后清理。
+- macOS 上先调用 `codex_app__load_workspace_dependencies`，使用其返回的 bundled Python 和文档处理依赖；
+- 设置稳定且可写的 `TMPDIR`（优先 `/private/tmp`），用 bundled `render_docx.py` 加 `--emit_pdf` 将 staging/final Word 渲染为临时 PDF 和 `page-<N>.png`；
+- 用 `python-docx` 定位目标 `Original Comment`/`Author Response`，再用 `pdftotext`/`pdfinfo` 确定实际页码，最后用 `view_image` 在 100% 检查目标页面；不把具体页码或意见编号写死；
+- 只检查目标回复实际占用的页面，跨页时检查全部覆盖页面；分页边界或布局异常时再扩大到相邻页；
+- 核对正文及普通文字为 Times New Roman 11 pt，图题/表题为 Times New Roman 10 pt 居中加粗，图题位于图下方、表题位于表上方，表内文字为 Times New Roman 10 pt，表格为三线表；
+- staging、渲染页、临时 PDF 和运行日志在成功后清理；渲染失败时停止 QA，修正后重新渲染。
 
 详细规则见 [回复、图表与 Word 原位更新协议](./references/response-and-artifact-protocol.md)。
 
